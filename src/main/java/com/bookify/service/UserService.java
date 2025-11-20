@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * UserService - Business logic for User management
+ * Business logic for User management
  */
 @Service
 @Transactional

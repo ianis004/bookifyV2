@@ -11,6 +11,6 @@ public class AppointmentConflictException extends RuntimeException {
     }
 
     public AppointmentConflictException() {
-        super("The requested time slot is already booked. Please choose another time.");
+        super("The requested time slot is already booked. Please choose another time :)");
     }
 }

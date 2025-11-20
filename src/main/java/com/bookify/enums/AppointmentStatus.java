@@ -1,7 +1,7 @@
 package com.bookify.enums;
 
 /**
- * AppointmentStatus Enum - Defines appointment states
+ *Defines appointment states
  */
 public enum AppointmentStatus {
     PENDING("Pending Confirmation"),

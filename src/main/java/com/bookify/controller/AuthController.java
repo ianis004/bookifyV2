@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * AuthController - Authentication endpoints
+ * Authentication endpoints
  */
 @RestController
 @RequestMapping("/api/auth")

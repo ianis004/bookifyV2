@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * ServiceRepository - Data access for Service entity
+ *Data access for Service entity
  */
 @Repository
 public interface ServiceRepository extends JpaRepository<Service, Long> {

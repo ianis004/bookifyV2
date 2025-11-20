@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * ServiceDTO - Data Transfer Object for Service
+ *Data Transfer Object for Service
  */
 @Data
 @NoArgsConstructor

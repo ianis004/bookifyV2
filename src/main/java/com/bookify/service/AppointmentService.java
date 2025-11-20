@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * AppointmentService - Business logic for Appointment management
+ * Business logic for Appointment management
  */
 @Service
 @Transactional

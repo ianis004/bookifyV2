@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * UserDTO - Data Transfer Object for User
+ *Data Transfer Object for User
  */
 @Data
 @NoArgsConstructor
@@ -42,7 +42,6 @@ public class UserDTO {
 
     private LocalDateTime createdAt;
 
-    // Password only for registration, not returned
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 }

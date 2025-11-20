@@ -1,7 +1,7 @@
 package com.bookify.enums;
 
 /**
- * Role Enum - Defines user roles in the system
+ *Defines user roles in the system
  */
 public enum Role {
     CLIENT("Client"),

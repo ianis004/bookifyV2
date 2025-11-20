@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * AppointmentDTO - Data Transfer Object for Appointment
+ *Data Transfer Object for Appointment
  */
 @Data
 @NoArgsConstructor

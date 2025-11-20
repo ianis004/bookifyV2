@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * UserRepository - Data access for User entity
+ *Data access for User entity
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {

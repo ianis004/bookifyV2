@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Appointments - Bookify</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar h1 {
+            font-size: 28px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .navbar a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .appointments-grid {
+            display: grid;
+            gap: 20px;
+        }
+        .appointment-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+        }
+        .appointment-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .appointment-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .detail-item strong {
+            color: #555;
+        }
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .status-PENDING {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-CONFIRMED {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-COMPLETED {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .status-CANCELLED {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 10px;
+        }
+        .empty-state p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <h1>📅 Bookify</h1>
+    <div>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/services">Services</a>
+        <a href="/my-appointments">My Appointments</a>
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2>My Appointments</h2>
+    <div id="appointmentsContainer" class="appointments-grid">
+        <div class="loading">Loading appointments...</div>
+    </div>
+</div>
+
+<script>
+    async function loadAppointments() {
+        try {
+            // For now, we'll load ALL appointments
+            // In a real app, this would filter by logged-in user
+            const response = await fetch('/api/appointments');
+            const appointments = await response.json();
+
+            const container = document.getElementById('appointmentsContainer');
+
+            if (appointments.length === 0) {
+                container.innerHTML = `
+                        <div class="empty-state">
+                            <h3>No appointments yet</h3>
+                            <p>You haven't booked any appointments.</p>
+                            <a href="/booking" class="btn">Book Your First Appointment</a>
+                        </div>
+                    `;
+                return;
+            }
+
+            container.innerHTML = appointments.map(apt => {
+                const date = new Date(apt.appointmentDateTime);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                const formattedTime = date.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                return `
+                        <div class="appointment-card">
+                            <h3>${apt.serviceName}</h3>
+                            <div class="appointment-details">
+                                <div class="detail-item">
+                                    <strong>📅 Date:</strong> ${formattedDate}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>🕒 Time:</strong> ${formattedTime}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>⏱️ Duration:</strong> ${apt.serviceDuration} min
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Status:</strong>
+                                    <span class="status status-${apt.status}">${apt.status}</span>
+                                </div>
+                            </div>
+                            ${apt.notes ? `<p><strong>Notes:</strong> ${apt.notes}</p>` : ''}
+                        </div>
+                    `;
+            }).join('');
+        } catch (error) {
+            document.getElementById('appointmentsContainer').innerHTML =
+                '<div class="loading">Error loading appointments. Please try again later.</div>';
+            console.error('Error:', error);
+        }
+    }
+
+    loadAppointments();
+</script>
+</body>
+</html>

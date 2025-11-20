@@ -17,9 +17,6 @@ import java.util.List;
 
 /**
  * StorageService - Handles file I/O for JSON and Java Object Serialization
- * Requirement: Store and read application data using JSON format
- * Requirement: Store and read application data using Java Object Stream format
- * Requirement: Compare file sizes and time to load for the two formats
  */
 @Service
 public class StorageService {
@@ -47,7 +44,6 @@ public class StorageService {
 
         JSONObject root = new JSONObject();
 
-        // Convert Users to JSON
         JSONArray usersArray = new JSONArray();
         for (UserDTO user : users) {
             JSONObject userObj = new JSONObject();
@@ -63,7 +59,6 @@ public class StorageService {
         }
         root.put("users", usersArray);
 
-        // Convert Services to JSON
         JSONArray servicesArray = new JSONArray();
         for (ServiceDTO service : services) {
             JSONObject serviceObj = new JSONObject();
@@ -77,7 +72,6 @@ public class StorageService {
         }
         root.put("services", servicesArray);
 
-        // Convert Appointments to JSON
         JSONArray appointmentsArray = new JSONArray();
         for (AppointmentDTO appointment : appointments) {
             JSONObject apptObj = new JSONObject();
@@ -91,7 +85,6 @@ public class StorageService {
         }
         root.put("appointments", appointmentsArray);
 
-        // Write to file
         try (FileWriter file = new FileWriter(JSON_FILE)) {
             file.write(root.toString(2)); // Pretty print with indent
         }
@@ -107,7 +100,7 @@ public class StorageService {
     }
 
     /**
-     * Read data from JSON format
+     * Read data from JSON
      */
     public DataWrapper readFromJSON() throws IOException {
         long startTime = System.currentTimeMillis();
@@ -119,7 +112,6 @@ public class StorageService {
         List<ServiceDTO> services = new ArrayList<>();
         List<AppointmentDTO> appointments = new ArrayList<>();
 
-        // Parse Users
         JSONArray usersArray = root.getJSONArray("users");
         for (int i = 0; i < usersArray.length(); i++) {
             JSONObject userObj = usersArray.getJSONObject(i);
@@ -133,7 +125,6 @@ public class StorageService {
             users.add(user);
         }
 
-        // Parse Services
         JSONArray servicesArray = root.getJSONArray("services");
         for (int i = 0; i < servicesArray.length(); i++) {
             JSONObject serviceObj = servicesArray.getJSONObject(i);
@@ -147,7 +138,6 @@ public class StorageService {
             services.add(service);
         }
 
-        // Parse Appointments
         JSONArray appointmentsArray = root.getJSONArray("appointments");
         for (int i = 0; i < appointmentsArray.length(); i++) {
             JSONObject apptObj = appointmentsArray.getJSONObject(i);
@@ -191,9 +181,7 @@ public class StorageService {
         return fileSize;
     }
 
-    /**
-     * Read data from Java Object Serialization
-     */
+
     public DataWrapper readFromSerialized() throws IOException, ClassNotFoundException {
         long startTime = System.currentTimeMillis();
 

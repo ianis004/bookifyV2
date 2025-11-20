@@ -16,6 +16,7 @@ import java.util.Map;
 /**
  * Global Exception Handler
  * Handles both standard and custom exceptions
+ * Aka THE BIG BOSS
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {

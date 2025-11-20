@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * PasswordResetTokenRepository - Data access for PasswordResetToken entity
+ *Data access for PasswordResetToken entity
  */
 @Repository
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Long> {

@@ -1,4 +1,3 @@
-/**
 package com.bookify.controller;
 
 import org.springframework.stereotype.Controller;
@@ -9,7 +8,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "redirect:/login";
+        return "redirect:/dashboard";
     }
 
     @GetMapping("/login")
@@ -42,24 +41,13 @@ public class HomeController {
         return "client/my-appointments";
     }
 
-    @GetMapping("/admin/dashboard")
-    public String adminDashboard() {
-        return "admin/dashboard";
-    }
-
-    @GetMapping("/admin/users")
-    public String adminUsers() {
-        return "admin/users";
-    }
-
-    @GetMapping("/admin/services")
-    public String adminServices() {
-        return "admin/services";
-    }
-
     @GetMapping("/staff/appointments")
     public String staffAppointments() {
         return "staff/appointments";
     }
+
+    @GetMapping("/logout")
+    public String logout() {
+        return "auth/logout";
+    }
 }
-*/

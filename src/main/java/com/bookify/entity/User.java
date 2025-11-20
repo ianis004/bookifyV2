@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User Entity - Represents system users (Clients, Staff, Admins)
+ *Represents system users (Clients, Staff, Admins)
  */
 @Entity
 @Table(name = "users")

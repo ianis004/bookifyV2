@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * AdminController - Admin management endpoints
- */
+
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {

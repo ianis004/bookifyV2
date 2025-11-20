@@ -2,7 +2,6 @@ package com.bookify.exception;
 
 /**
  * Custom Exception: Resource Not Found
- * Thrown when a requested resource doesn't exist
  */
 public class ResourceNotFoundException extends RuntimeException {
 

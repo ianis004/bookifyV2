@@ -3,10 +3,7 @@ package com.bookify;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * Main Application Class for Bookify
- * Appointment Booking Management System
- */
+
 @SpringBootApplication
 public class BookifyApplication {
 

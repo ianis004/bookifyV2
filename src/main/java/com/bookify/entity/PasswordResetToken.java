@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 /**
- * PasswordResetToken Entity - For password reset functionality
+ *For password reset functionality
  */
 @Entity
 @Table(name = "password_reset_tokens")

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service Entity - Represents bookable services
+ *Represents bookable services
  */
 @Entity
 @Table(name = "services")
