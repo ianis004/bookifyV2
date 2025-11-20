@@ -155,7 +155,6 @@
 </div>
 
 <script>
-    // Load services
     async function loadServices() {
         try {
             const response = await fetch('/api/services/active');
@@ -165,20 +164,19 @@
             services.forEach(service => {
                 const option = document.createElement('option');
                 option.value = service.id;
-                option.textContent = `${service.name} - $${service.price} (${service.durationMinutes} min)`;
+                option.textContent = `${service.name} - (${service.price} lei) (${service.durationMinutes} min)`;
                 select.appendChild(option);
             });
         } catch (error) {
             showAlert('Error loading services', 'error');
         }
     }
-
-    // Set minimum date to today
+    // min date
     const dateInput = document.getElementById('date');
     const today = new Date().toISOString().split('T')[0];
     dateInput.min = today;
 
-    // Handle form submission
+
     document.getElementById('bookingForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -187,11 +185,10 @@
         const time = document.getElementById('time').value;
         const notes = document.getElementById('notes').value;
 
-        // Combine date and time
         const appointmentDateTime = `${date}T${time}:00`;
 
         const bookingData = {
-            clientId: 1, // This should be the logged-in user's ID
+            clientId: 1,
             serviceId: parseInt(serviceId),
             appointmentDateTime: appointmentDateTime,
             notes: notes
@@ -233,7 +230,6 @@
         }, 5000);
     }
 
-    // Load services on page load
     loadServices();
 </script>
 </body>

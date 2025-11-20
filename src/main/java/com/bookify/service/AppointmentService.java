@@ -58,15 +58,15 @@ public class AppointmentService {
     }
 
     public AppointmentDTO createAppointment(AppointmentDTO appointmentDTO) {
-        // Validate client exists
+
         User client = userRepository.findById(appointmentDTO.getClientId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", appointmentDTO.getClientId()));
 
-        // Validate service exists
+
         com.bookify.entity.Service service = serviceRepository.findById(appointmentDTO.getServiceId())
                 .orElseThrow(() -> new ResourceNotFoundException("Service", appointmentDTO.getServiceId()));
 
-        // Check for conflicts
+        // conflict check
         if (appointmentRepository.existsConflictingAppointment(
                 service.getId(), appointmentDTO.getAppointmentDateTime())) {
             throw new AppointmentConflictException();

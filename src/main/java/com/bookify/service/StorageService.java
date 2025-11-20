@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * StorageService - Handles file I/O for JSON and Java Object Serialization
+ *Handles file I/O for JSON and Java Object Serialization
  */
 @Service
 public class StorageService {
@@ -34,9 +34,7 @@ public class StorageService {
         }
     }
 
-    /**
-     * Save data to JSON format
-     */
+   // json format
     public long saveToJSON(List<UserDTO> users, List<ServiceDTO> services, List<AppointmentDTO> appointments)
             throws IOException {
 
@@ -99,9 +97,7 @@ public class StorageService {
         return fileSize;
     }
 
-    /**
-     * Read data from JSON
-     */
+    // read json
     public DataWrapper readFromJSON() throws IOException {
         long startTime = System.currentTimeMillis();
 
@@ -157,9 +153,7 @@ public class StorageService {
         return new DataWrapper(users, services, appointments);
     }
 
-    /**
-     * Save data using Java Object Serialization
-     */
+    // java obj serialization
     public long saveToSerialized(List<UserDTO> users, List<ServiceDTO> services, List<AppointmentDTO> appointments)
             throws IOException {
 
@@ -196,9 +190,6 @@ public class StorageService {
         return data;
     }
 
-    /**
-     * Compare both formats
-     */
     public void compareFormats(List<UserDTO> users, List<ServiceDTO> services, List<AppointmentDTO> appointments) {
         try {
             System.out.println("\n=== Storage Format Comparison ===");
@@ -215,9 +206,7 @@ public class StorageService {
         }
     }
 
-    /**
-     * Data wrapper class for serialization
-     */
+    //wrapper for java o.s.
     public static class DataWrapper implements Serializable {
         private static final long serialVersionUID = 1L;
 

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
-CRUD operations for appointments
+ * CRUD operations for appointments
  */
 @RestController
 @RequestMapping("/api/appointments")

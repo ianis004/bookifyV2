@@ -1,7 +1,7 @@
 package com.bookify.enums;
 
 /**
- *Defines user account status
+ *user account status
  */
 public enum UserStatus {
     ACTIVE("Active"),

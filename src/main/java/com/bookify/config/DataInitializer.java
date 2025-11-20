@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
- * DataInitializer - Creates default users on application startup
+ *Creates default users on application startup
  */
 @Component
 @Order(1)
@@ -25,12 +25,10 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Check if users already exist
         if (userRepository.count() == 0) {
 
             System.out.println("🔄 Creating default users...");
 
-            // Create Admin
             User admin = User.builder()
                     .username("admin")
                     .email("admin@bookify.com")
@@ -42,7 +40,6 @@ public class DataInitializer implements CommandLineRunner {
                     .build();
             userRepository.save(admin);
 
-            // Create Staff
             User staff = User.builder()
                     .username("staff")
                     .email("staff@bookify.com")
@@ -54,7 +51,6 @@ public class DataInitializer implements CommandLineRunner {
                     .build();
             userRepository.save(staff);
 
-            // Create Client 1
             User client1 = User.builder()
                     .username("client1")
                     .email("client1@example.com")
@@ -66,7 +62,6 @@ public class DataInitializer implements CommandLineRunner {
                     .build();
             userRepository.save(client1);
 
-            // Create Client 2
             User client2 = User.builder()
                     .username("client2")
                     .email("client2@example.com")

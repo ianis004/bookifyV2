@@ -154,14 +154,10 @@
 </div>
 
 <script>
-    // Check if user is admin/staff and show admin panel
     async function checkUserRole() {
         try {
-            // Try to access admin endpoint - if successful, user is admin/staff
             const response = await fetch('/api/admin/users');
-
             if (response.ok) {
-                // User is admin/staff, add admin card
                 const cardsContainer = document.getElementById('cardsContainer');
                 const adminCard = `
                         <div class="card" onclick="window.location.href='/staff/appointments'">
@@ -174,7 +170,6 @@
                 cardsContainer.insertAdjacentHTML('beforeend', adminCard);
             }
         } catch (error) {
-            // User is not admin/staff, do nothing
             console.log('Regular user');
         }
     }

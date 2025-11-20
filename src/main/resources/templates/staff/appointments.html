@@ -376,7 +376,6 @@
 
     async function updateStatus(appointmentId, newStatus) {
         try {
-            // Get the appointment details first
             const apt = allAppointments.find(a => a.id === appointmentId);
 
             const response = await fetch(`/api/appointments/${appointmentId}`, {
@@ -392,7 +391,7 @@
 
             if (response.ok) {
                 showAlert(`Appointment ${newStatus.toLowerCase()} successfully!`);
-                loadAppointments(); // Reload appointments
+                loadAppointments();
             } else {
                 showAlert('Failed to update appointment', 'error');
             }
@@ -411,7 +410,6 @@
         }, 3000);
     }
 
-    // Load appointments on page load
     loadAppointments();
 </script>
 </body>

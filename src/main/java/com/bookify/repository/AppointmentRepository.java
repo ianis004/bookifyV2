@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Data access for Appointment entity
+ * Data access for appointment entity
  */
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {

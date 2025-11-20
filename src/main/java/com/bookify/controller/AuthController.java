@@ -24,7 +24,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserDTO userDTO) {
-        userDTO.setRole(Role.CLIENT); // Default role for registration
+        userDTO.setRole(Role.CLIENT);
         UserDTO created = userService.createUser(userDTO);
 
         Map<String, Object> response = new HashMap<>();
@@ -39,13 +39,13 @@ public class AuthController {
         String username = credentials.get("username");
         String password = credentials.get("password");
 
-        // Simplified login (in real app, use Spring Security with JWT)
+        // simpler login
         UserDTO user = userService.getUserByUsername(username);
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Login successful");
         response.put("user", user);
-        response.put("token", "mock-jwt-token"); // Mock token
+        response.put("token", "mock-jwt-token");
 
         return ResponseEntity.ok(response);
     }

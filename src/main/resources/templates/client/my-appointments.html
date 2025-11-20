@@ -147,8 +147,7 @@
 <script>
     async function loadAppointments() {
         try {
-            // For now, we'll load ALL appointments
-            // In a real app, this would filter by logged-in user
+           // loads all appointments for now , could be made to load for a specific user
             const response = await fetch('/api/appointments');
             const appointments = await response.json();
 

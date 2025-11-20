@@ -8,7 +8,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 /**
- *Represents bookings
+ *Here are the bookings
  */
 @Entity
 @Table(name = "appointments")
