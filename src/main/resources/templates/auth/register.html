@@ -11,7 +11,11 @@
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background:
+                    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                    url('/images/background3.png');
+            background-size: cover;
+            background-position: center;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -90,7 +94,10 @@
 </head>
 <body>
 <div class="register-container">
-    <div class="logo">📅</div>
+    <div class="logo">
+        <img src="/images/logo2.png" alt="Bookify Logo" style="max-width: 150px; height: auto; display: block; margin: 0 auto;"
+             onerror="this.style.display='none'; this.parentElement.innerHTML='📅';">
+    </div>
     <h1>Create Account</h1>
 
     <form th:action="@{/api/auth/register}" method="post" id="registerForm">

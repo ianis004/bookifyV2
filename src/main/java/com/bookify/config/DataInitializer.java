@@ -34,7 +34,7 @@ public class DataInitializer implements CommandLineRunner {
                     .email("admin@bookify.com")
                     .password(passwordEncoder.encode("password"))
                     .fullName("Admin User")
-                    .phone("+1234567890")
+                    .phone("+40 0734558923")
                     .role(Role.ADMIN)
                     .status(UserStatus.ACTIVE)
                     .build();
@@ -45,7 +45,7 @@ public class DataInitializer implements CommandLineRunner {
                     .email("staff@bookify.com")
                     .password(passwordEncoder.encode("password"))
                     .fullName("Staff Member")
-                    .phone("+1234567891")
+                    .phone("+40 0723338457")
                     .role(Role.STAFF)
                     .status(UserStatus.ACTIVE)
                     .build();
@@ -55,8 +55,8 @@ public class DataInitializer implements CommandLineRunner {
                     .username("client1")
                     .email("client1@example.com")
                     .password(passwordEncoder.encode("password"))
-                    .fullName("John Doe")
-                    .phone("+1234567892")
+                    .fullName("Dan Daniel")
+                    .phone("+40 0723468487")
                     .role(Role.CLIENT)
                     .status(UserStatus.ACTIVE)
                     .build();
@@ -66,8 +66,8 @@ public class DataInitializer implements CommandLineRunner {
                     .username("client2")
                     .email("client2@example.com")
                     .password(passwordEncoder.encode("password"))
-                    .fullName("Jane Smith")
-                    .phone("+1234567893")
+                    .fullName("Maria Elena")
+                    .phone("++40 0793854576")
                     .role(Role.CLIENT)
                     .status(UserStatus.ACTIVE)
                     .build();
