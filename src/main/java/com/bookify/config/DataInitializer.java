@@ -74,10 +74,6 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.save(client2);
 
             System.out.println("✅ Default users created successfully!");
-            System.out.println("   👤 Admin: admin / password");
-            System.out.println("   👤 Staff: staff / password");
-            System.out.println("   👤 Client1: client1 / password");
-            System.out.println("   👤 Client2: client2 / password");
         } else {
             System.out.println("ℹ️  Users already exist. Skipping initialization.");
         }

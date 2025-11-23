@@ -50,4 +50,9 @@ public class HomeController {
     public String logout() {
         return "auth/logout";
     }
+
+    @GetMapping("/admin/settings")
+    public String adminSettings() {
+        return "admin/settings";
+    }
 }

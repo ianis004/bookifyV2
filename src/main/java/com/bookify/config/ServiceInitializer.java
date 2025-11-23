@@ -80,12 +80,6 @@ public class ServiceInitializer implements CommandLineRunner {
             serviceRepository.save(facial);
 
             System.out.println("✅ Default services created successfully!");
-            System.out.println("   💇 Haircut & Styling - 60 lei (30 min)");
-            System.out.println("   🎨 Hair Coloring - 140 lei (90 min)");
-            System.out.println("   💅 Manicure - 150 lei (45 min)");
-            System.out.println("   🦶 Pedicure - 120 lei (60 min)");
-            System.out.println("   💆 Relaxing Massage - 80 lei (60 min)");
-            System.out.println("   ✨ Facial Treatment - 300 lei (50 min)");
         } else {
             System.out.println("ℹ️  Services already exist. Skipping initialization.");
         }

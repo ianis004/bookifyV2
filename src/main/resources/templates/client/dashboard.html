@@ -11,7 +11,7 @@
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: url('/images/dashboard.jpeg');
+            background: url('/images/dashboard4.jpeg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -21,14 +21,14 @@
         .navbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px 40px;
+            padding: 8px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .navbar h1 {
-            font-size: 28px;
+            font-size: 32px;
         }
         .nav-links {
             display: flex;
@@ -39,7 +39,7 @@
             text-decoration: none;
             margin-left: 20px;
             padding: 8px 16px;
-            border-radius: 5px;
+            border-radius: 4px;
             transition: background 0.3s;
         }
         .navbar a:hover {
@@ -66,7 +66,7 @@
         }
         .cards {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
         }
         .card {
@@ -105,15 +105,12 @@
         .btn:hover {
             transform: translateY(-2px);
         }
-
         .admin-card {
-            background: white ;
+            background: white;
             border: 2px solid #667eea;
-            grid-column: 2;
-            grid-row: 2;
         }
         .admin-card h3 {
-            color: #333 ;
+            color: #333;
         }
         .admin-card p {
             color: #666;
@@ -121,15 +118,11 @@
         .btn-admin {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
-
-        .cards:not(.has-admin) {
-            grid-template-columns: repeat(3, 1fr);
-        }
     </style>
 </head>
 <body>
 <div class="navbar">
-    <h1><img src="/images/logo2.png" alt="Bookify Logo" style="height: 65px; vertical-align: middle; margin-right: 10px;">Bookify</h1>
+    <h1><img src="/images/logo.png" alt="Bookify Logo" style="height: 65px; vertical-align: middle; margin-right: 10px;">Bookify</h1>
     <div class="nav-links">
         <a href="/dashboard">Dashboard</a>
         <a href="/services">Services</a>
@@ -141,13 +134,13 @@
 
 <div class="container">
     <div class="welcome">
-        <h2>Welcome to Bookify ! 👋</h2>
+        <h2>Welcome to Bookify! 👋</h2>
         <p>Manage your appointments and booking services with ease.</p>
     </div>
 
     <div class="cards" id="cardsContainer">
         <div class="card" onclick="window.location.href='/services'">
-            <div class="card-icon">🔧</div>
+            <div class="card-icon">✨</div>
             <h3>Browse Services</h3>
             <p>View all available services and their details</p>
             <a href="/services" class="btn">View Services</a>
@@ -176,21 +169,23 @@
             if (response.ok) {
                 const cardsContainer = document.getElementById('cardsContainer');
 
-                const adminCard = document.createElement('div');
-                adminCard.className = 'card admin-card';
-                adminCard.onclick = () => window.location.href = '/staff/appointments';
-                adminCard.innerHTML = `
-                    <div class="card-icon">👨‍💼</div>
-                    <h3>Manage Appointments</h3>
-                    <p>Staff panel - Confirm and manage all appointments</p>
-                    <a href="/staff/appointments" class="btn btn-admin">Staff Panel</a>
+                const adminCards = `
+                    <div class="card admin-card" onclick="window.location.href='/staff/appointments'">
+                        <div class="card-icon">👨‍💼</div>
+                        <h3>Manage Appointments</h3>
+                        <p>Staff panel - Confirm and manage all appointments</p>
+                        <a href="/staff/appointments" class="btn btn-admin">Staff Panel</a>
+                    </div>
+
+                    <div class="card admin-card" onclick="window.location.href='/admin/settings'">
+                        <div class="card-icon">⚙️</div>
+                        <h3>Business Settings</h3>
+                        <p>Configure business hours, contact info, and more</p>
+                        <a href="/admin/settings" class="btn btn-admin">Settings</a>
+                    </div>
                 `;
 
-                cardsContainer.classList.add('has-admin');
-
-                const bookAppointmentCard = cardsContainer.children[1];
-                bookAppointmentCard.parentNode.insertBefore(adminCard, bookAppointmentCard.nextSibling);
-
+                cardsContainer.insertAdjacentHTML('beforeend', adminCards);
             }
         } catch (error) {
             console.log('Regular user');
