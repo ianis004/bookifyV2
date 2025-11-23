@@ -102,6 +102,10 @@
             background: #f8d7da;
             color: #721c24;
         }
+        .status-NO_SHOW {
+            background: #e2e3e5;
+            color: #383d41;
+        }
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -127,7 +131,9 @@
         .loading {
             text-align: center;
             padding: 40px;
-            color: #666;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -145,29 +151,33 @@
 <div class="container">
     <h2>My Appointments</h2>
     <div id="appointmentsContainer" class="appointments-grid">
-        <div class="loading">Loading appointments...</div>
+        <div class="loading">Loading your appointments...</div>
     </div>
 </div>
 
 <script>
     async function loadAppointments() {
         try {
-           // loads all appointments for now , could be made to load for a specific user
-            const response = await fetch('/api/appointments');
-            const appointments = await response.json();
+            const response = await fetch('/api/appointments/my-appointments');
 
+            if (!response.ok) {
+                throw new Error('Failed to load appointments');
+            }
+
+            const appointments = await response.json();
             const container = document.getElementById('appointmentsContainer');
 
             if (appointments.length === 0) {
                 container.innerHTML = `
-                        <div class="empty-state">
-                            <h3>No appointments yet</h3>
-                            <p>You haven't booked any appointments.</p>
-                            <a href="/booking" class="btn">Book Your First Appointment</a>
-                        </div>
-                    `;
+                    <div class="empty-state">
+                        <h3>No appointments yet</h3>
+                        <p>You haven't booked any appointments.</p>
+                        <a href="/booking" class="btn">Book Your First Appointment</a>
+                    </div>
+                `;
                 return;
             }
+            appointments.sort((a, b) => new Date(b.appointmentDateTime) - new Date(a.appointmentDateTime));
 
             container.innerHTML = appointments.map(apt => {
                 const date = new Date(apt.appointmentDateTime);
@@ -182,26 +192,26 @@
                 });
 
                 return `
-                        <div class="appointment-card">
-                            <h3>${apt.serviceName}</h3>
-                            <div class="appointment-details">
-                                <div class="detail-item">
-                                    <strong>📅 Date:</strong> ${formattedDate}
-                                </div>
-                                <div class="detail-item">
-                                    <strong>🕒 Time:</strong> ${formattedTime}
-                                </div>
-                                <div class="detail-item">
-                                    <strong>⏱️ Duration:</strong> ${apt.serviceDuration} min
-                                </div>
-                                <div class="detail-item">
-                                    <strong>Status:</strong>
-                                    <span class="status status-${apt.status}">${apt.status}</span>
-                                </div>
+                    <div class="appointment-card">
+                        <h3>${apt.serviceName}</h3>
+                        <div class="appointment-details">
+                            <div class="detail-item">
+                                <strong>📅 Date:</strong> ${formattedDate}
                             </div>
-                            ${apt.notes ? `<p><strong>Notes:</strong> ${apt.notes}</p>` : ''}
+                            <div class="detail-item">
+                                <strong>🕒 Time:</strong> ${formattedTime}
+                            </div>
+                            <div class="detail-item">
+                                <strong>⏱️ Duration:</strong> ${apt.serviceDuration} min
+                            </div>
+                            <div class="detail-item">
+                                <strong>Status:</strong>
+                                <span class="status status-${apt.status}">${apt.status}</span>
+                            </div>
                         </div>
-                    `;
+                        ${apt.notes ? `<p><strong>Notes:</strong> ${apt.notes}</p>` : ''}
+                    </div>
+                `;
             }).join('');
         } catch (error) {
             document.getElementById('appointmentsContainer').innerHTML =

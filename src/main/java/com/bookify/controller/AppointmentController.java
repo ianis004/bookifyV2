@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -34,6 +35,14 @@ public class AppointmentController {
     @GetMapping("/client/{clientId}")
     public ResponseEntity<List<AppointmentDTO>> getAppointmentsByClient(@PathVariable Long clientId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByClientId(clientId));
+    }
+
+    @GetMapping("/my-appointments")
+    public ResponseEntity<List<AppointmentDTO>> getMyAppointments(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(appointmentService.getAppointmentsByUsername(principal.getName()));
     }
 
     @GetMapping("/status/{status}")

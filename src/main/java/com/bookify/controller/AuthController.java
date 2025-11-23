@@ -1,5 +1,6 @@
 package com.bookify.controller;
 
+import java.security.Principal;
 import com.bookify.dto.UserDTO;
 import com.bookify.enums.Role;
 import com.bookify.service.UserService;
@@ -46,6 +47,23 @@ public class AuthController {
         response.put("message", "Login successful");
         response.put("user", user);
         response.put("token", "mock-jwt-token");
+
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UserDTO user = userService.getUserByUsername(principal.getName());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", user.getId());
+        response.put("username", user.getUsername());
+        response.put("role", user.getRole().toString());
+        response.put("email", user.getEmail());
+        response.put("fullName", user.getFullName());
 
         return ResponseEntity.ok(response);
     }

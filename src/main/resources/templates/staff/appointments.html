@@ -41,6 +41,9 @@
         .navbar a:hover {
             background: rgba(255,255,255,0.2);
         }
+        .navbar a.hidden {
+            display: none;
+        }
         .container {
             max-width: 1400px;
             margin: 40px auto;
@@ -214,7 +217,7 @@
     <div>
         <a href="/dashboard">Dashboard</a>
         <a href="/staff/appointments">Appointments</a>
-        <a href="/h2-console" target="_blank">Database</a>
+        <a href="/h2-console" target="_blank" id="databaseLink">Database</a>
         <a href="/logout">Logout</a>
     </div>
 </div>
@@ -262,6 +265,22 @@
 
 <script>
     let allAppointments = [];
+
+    async function checkUserRole() {
+        try {
+            const response = await fetch('/api/auth/me');
+            if (response.ok) {
+                const data = await response.json();
+                const databaseLink = document.getElementById('databaseLink');
+
+                if (data.role !== 'ADMIN') {
+                    databaseLink.classList.add('hidden');
+                }
+            }
+        } catch (error) {
+            console.error('Error checking user role:', error);
+        }
+    }
 
     async function loadAppointments() {
         try {
@@ -415,6 +434,7 @@
         }, 3000);
     }
 
+    checkUserRole();
     loadAppointments();
 </script>
 </body>

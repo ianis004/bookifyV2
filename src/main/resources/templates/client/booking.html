@@ -56,6 +56,21 @@
             color: #333;
             margin-bottom: 30px;
         }
+        .business-hours-info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+        .business-hours-info h4 {
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+        .business-hours-info p {
+            color: #555;
+            margin: 5px 0;
+        }
         .form-group {
             margin-bottom: 25px;
         }
@@ -96,6 +111,11 @@
         .btn:hover {
             transform: translateY(-2px);
         }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
         .alert {
             padding: 15px;
             margin-bottom: 20px;
@@ -111,6 +131,16 @@
             background: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
+        }
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
         }
     </style>
 </head>
@@ -128,6 +158,12 @@
 <div class="container">
     <div class="card">
         <h2>Book an Appointment</h2>
+
+        <div id="businessHoursInfo" class="business-hours-info" style="display: none;">
+            <h4>📅 Business Hours</h4>
+            <p id="hoursText"></p>
+            <p id="bookingStatus"></p>
+        </div>
 
         <div id="alertBox" class="alert"></div>
 
@@ -147,6 +183,9 @@
             <div class="form-group">
                 <label for="time">Appointment Time *</label>
                 <input type="time" id="time" name="time" required>
+                <small style="color: #666; display: block; margin-top: 5px;">
+                    Please select a time within business hours
+                </small>
             </div>
 
             <div class="form-group">
@@ -154,12 +193,76 @@
                 <textarea id="notes" name="notes" placeholder="Any special requests or notes..."></textarea>
             </div>
 
-            <button type="submit" class="btn">Book Appointment</button>
+            <button type="submit" class="btn" id="submitBtn">Book Appointment</button>
         </form>
     </div>
 </div>
 
 <script>
+    let currentUserId = null;
+    let businessSettings = null;
+
+    async function getCurrentUser() {
+        try {
+            const response = await fetch('/api/auth/me');
+            if (response.ok) {
+                const data = await response.json();
+                currentUserId = data.id;
+                return data;
+            } else {
+                showAlert('Error: Could not retrieve user information', 'error');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error fetching user:', error);
+            showAlert('Error loading user information', 'error');
+            return null;
+        }
+    }
+
+    async function loadBusinessSettings() {
+        try {
+            const response = await fetch('/api/settings');
+            if (response.ok) {
+                businessSettings = await response.json();
+                displayBusinessHours();
+
+                if (!businessSettings.acceptOnlineBookings) {
+                    showAlert('Online bookings are currently disabled. Please contact us directly.', 'warning');
+                    document.getElementById('submitBtn').disabled = true;
+                }
+
+                const timeInput = document.getElementById('time');
+                timeInput.min = businessSettings.openingTime;
+                timeInput.max = businessSettings.closingTime;
+
+                return businessSettings;
+            }
+        } catch (error) {
+            console.error('Error loading business settings:', error);
+        }
+    }
+
+    function displayBusinessHours() {
+        if (!businessSettings) return;
+
+        const infoBox = document.getElementById('businessHoursInfo');
+        const hoursText = document.getElementById('hoursText');
+        const bookingStatus = document.getElementById('bookingStatus');
+
+        hoursText.textContent = `Open: ${businessSettings.openingTime} - ${businessSettings.closingTime}`;
+
+        if (businessSettings.acceptOnlineBookings) {
+            bookingStatus.textContent = '✅ Online bookings are available';
+            bookingStatus.style.color = '#155724';
+        } else {
+            bookingStatus.textContent = '❌ Online bookings are currently disabled';
+            bookingStatus.style.color = '#721c24';
+        }
+
+        infoBox.style.display = 'block';
+    }
+
     async function loadServices() {
         try {
             const response = await fetch('/api/services/active');
@@ -170,20 +273,79 @@
                 const option = document.createElement('option');
                 option.value = service.id;
                 option.textContent = `${service.name} - (${service.price} lei) (${service.durationMinutes} min)`;
+                option.dataset.duration = service.durationMinutes;
                 select.appendChild(option);
             });
         } catch (error) {
             showAlert('Error loading services', 'error');
         }
     }
-    // min date
+
     const dateInput = document.getElementById('date');
     const today = new Date().toISOString().split('T')[0];
     dateInput.min = today;
 
+    document.getElementById('time').addEventListener('change', validateAppointmentTime);
+    document.getElementById('service').addEventListener('change', validateAppointmentTime);
+
+    function validateAppointmentTime() {
+        if (!businessSettings) return;
+
+        const timeInput = document.getElementById('time');
+        const serviceSelect = document.getElementById('service');
+        const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+
+        if (!timeInput.value || !selectedOption.dataset.duration) return;
+
+        const appointmentTime = timeInput.value;
+        const serviceDuration = parseInt(selectedOption.dataset.duration);
+
+        const [hours, minutes] = appointmentTime.split(':').map(Number);
+        const appointmentDateTime = new Date();
+        appointmentDateTime.setHours(hours, minutes, 0);
+
+        const endDateTime = new Date(appointmentDateTime);
+        endDateTime.setMinutes(endDateTime.getMinutes() + serviceDuration);
+
+        const endTime = endDateTime.toTimeString().slice(0, 5);
+        const closingTime = businessSettings.closingTime;
+
+        if (appointmentTime < businessSettings.openingTime) {
+            showAlert(`Appointment time must be after opening time (${businessSettings.openingTime})`, 'error');
+            timeInput.value = '';
+            return false;
+        }
+
+        if (appointmentTime > closingTime) {
+            showAlert(`Appointment time must be before closing time (${closingTime})`, 'error');
+            timeInput.value = '';
+            return false;
+        }
+
+        if (endTime > closingTime) {
+            showAlert(`This appointment would end at ${endTime}, which is after closing time (${closingTime}). Please choose an earlier time.`, 'error');
+            timeInput.value = '';
+            return false;
+        }
+
+        return true;
+    }
 
     document.getElementById('bookingForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+
+        if (!currentUserId) {
+            showAlert('Error: User not logged in', 'error');
+            return;
+        }
+
+        if (!validateAppointmentTime()) {
+            return;
+        }
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Booking...';
 
         const serviceId = document.getElementById('service').value;
         const date = document.getElementById('date').value;
@@ -193,7 +355,7 @@
         const appointmentDateTime = `${date}T${time}:00`;
 
         const bookingData = {
-            clientId: 1,
+            clientId: currentUserId,
             serviceId: parseInt(serviceId),
             appointmentDateTime: appointmentDateTime,
             notes: notes
@@ -217,10 +379,14 @@
                 }, 2000);
             } else {
                 const error = await response.json();
-                showAlert('Booking failed: ' + error.message, 'error');
+                showAlert('Booking failed: ' + (error.message || 'Unknown error'), 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Book Appointment';
             }
         } catch (error) {
-            showAlert('Error: ' + error.message, 'error');
+            showAlert('Booking failed: ' + error.message, 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Book Appointment';
         }
     });
 
@@ -235,7 +401,13 @@
         }, 5000);
     }
 
-    loadServices();
+    async function initializePage() {
+        await getCurrentUser();
+        await loadBusinessSettings();
+        await loadServices();
+    }
+
+    initializePage();
 </script>
 </body>
 </html>

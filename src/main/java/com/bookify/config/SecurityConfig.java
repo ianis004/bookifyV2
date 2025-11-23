@@ -66,14 +66,54 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/js/**"),
                                 new AntPathRequestMatcher("/images/**")
                         ).permitAll()
+
                         .requestMatchers(
                                 new AntPathRequestMatcher("/api/admin/**"),
                                 new AntPathRequestMatcher("/admin/**")
                         ).hasAuthority("ADMIN")
+
                         .requestMatchers(
                                 new AntPathRequestMatcher("/api/staff/**"),
                                 new AntPathRequestMatcher("/staff/**")
                         ).hasAnyAuthority("STAFF", "ADMIN")
+
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/api/appointments", "GET")
+                        ).hasAnyAuthority("STAFF", "ADMIN")
+
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/api/appointments/status/**", "GET")
+                        ).hasAnyAuthority("STAFF", "ADMIN")
+
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/api/appointments/my-appointments", "GET")
+                        ).authenticated()
+
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/api/appointments", "POST")
+                        ).authenticated()
+
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/api/appointments/**", "PUT"),
+                                new AntPathRequestMatcher("/api/appointments/**", "DELETE")
+                        ).hasAnyAuthority("STAFF", "ADMIN")
+
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/api/appointments/**", "GET")
+                        ).authenticated()
+
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/api/services/**")
+                        ).authenticated()
+
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/api/settings", "GET")
+                        ).authenticated()
+
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/api/settings/**")
+                        ).hasAuthority("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

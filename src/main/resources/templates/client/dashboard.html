@@ -45,6 +45,9 @@
         .navbar a:hover {
             background: rgba(255,255,255,0.2);
         }
+        .navbar a.hidden {
+            display: none;
+        }
         .container {
             max-width: 1200px;
             margin: 40px auto;
@@ -127,7 +130,7 @@
         <a href="/dashboard">Dashboard</a>
         <a href="/services">Services</a>
         <a href="/my-appointments">My Appointments</a>
-        <a href="/h2-console" target="_blank">Database</a>
+        <a href="/h2-console" target="_blank" id="databaseLink">Database</a>
         <a href="/logout">Logout</a>
     </div>
 </div>
@@ -139,6 +142,7 @@
     </div>
 
     <div class="cards" id="cardsContainer">
+        <!-- Base cards visible to all users -->
         <div class="card" onclick="window.location.href='/services'">
             <div class="card-icon">✨</div>
             <h3>Browse Services</h3>
@@ -163,36 +167,66 @@
 </div>
 
 <script>
-    async function checkUserRole() {
+    async function loadUserDashboard() {
         try {
-            const response = await fetch('/api/admin/users');
-            if (response.ok) {
-                const cardsContainer = document.getElementById('cardsContainer');
+            const response = await fetch('/api/auth/me');
 
-                const adminCards = `
-                    <div class="card admin-card" onclick="window.location.href='/staff/appointments'">
-                        <div class="card-icon">👨‍💼</div>
-                        <h3>Manage Appointments</h3>
-                        <p>Staff panel - Confirm and manage all appointments</p>
-                        <a href="/staff/appointments" class="btn btn-admin">Staff Panel</a>
-                    </div>
-
-                    <div class="card admin-card" onclick="window.location.href='/admin/settings'">
-                        <div class="card-icon">⚙️</div>
-                        <h3>Business Settings</h3>
-                        <p>Configure business hours, contact info, and more</p>
-                        <a href="/admin/settings" class="btn btn-admin">Settings</a>
-                    </div>
-                `;
-
-                cardsContainer.insertAdjacentHTML('beforeend', adminCards);
+            if (!response.ok) {
+                console.error('Failed to fetch user info');
+                setupDashboard('CLIENT');
+                return;
             }
+
+            const data = await response.json();
+            setupDashboard(data.role);
+
         } catch (error) {
-            console.log('Regular user');
+            console.error('Error loading user dashboard:', error);
+            setupDashboard('CLIENT');
         }
     }
 
-    checkUserRole();
+    function setupDashboard(userRole) {
+        const cardsContainer = document.getElementById('cardsContainer');
+        const databaseLink = document.getElementById('databaseLink');
+
+        if (userRole !== 'ADMIN') {
+            databaseLink.classList.add('hidden');
+        }
+
+        if (userRole === 'STAFF') {
+            const staffCard = `
+                <div class="card admin-card" onclick="window.location.href='/staff/appointments'">
+                    <div class="card-icon">👨‍💼</div>
+                    <h3>Manage Appointments</h3>
+                    <p>Staff panel - Confirm and manage all appointments</p>
+                    <a href="/staff/appointments" class="btn btn-admin">Staff Panel</a>
+                </div>
+            `;
+            cardsContainer.insertAdjacentHTML('beforeend', staffCard);
+
+        } else if (userRole === 'ADMIN') {
+            const adminCards = `
+                <div class="card admin-card" onclick="window.location.href='/staff/appointments'">
+                    <div class="card-icon">👨‍💼</div>
+                    <h3>Manage Appointments</h3>
+                    <p>Staff panel - Confirm and manage all appointments</p>
+                    <a href="/staff/appointments" class="btn btn-admin">Staff Panel</a>
+                </div>
+
+                <div class="card admin-card" onclick="window.location.href='/admin/settings'">
+                    <div class="card-icon">⚙️</div>
+                    <h3>Business Settings</h3>
+                    <p>Configure business hours, contact info, and more</p>
+                    <a href="/admin/settings" class="btn btn-admin">Settings</a>
+                </div>
+            `;
+            cardsContainer.insertAdjacentHTML('beforeend', adminCards);
+        }
+
+    }
+
+    loadUserDashboard();
 </script>
 </body>
 </html>

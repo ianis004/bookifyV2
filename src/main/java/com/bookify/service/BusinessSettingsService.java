@@ -61,7 +61,6 @@ public class BusinessSettingsService {
         return businessSettingsRepository.count() > 0;
     }
 
-    // Conversion methods
     private BusinessSettingsDTO convertToDTO(BusinessSettings settings) {
         return BusinessSettingsDTO.builder()
                 .id(settings.getId())

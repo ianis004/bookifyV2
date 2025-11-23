@@ -1,6 +1,7 @@
 package com.bookify.service;
 
 import com.bookify.dto.AppointmentDTO;
+import com.bookify.dto.BusinessSettingsDTO;
 import com.bookify.entity.Appointment;
 import com.bookify.entity.User;
 import com.bookify.enums.AppointmentStatus;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +35,9 @@ public class AppointmentService {
     @Autowired
     private ServiceRepository serviceRepository;
 
+    @Autowired
+    private BusinessSettingsService businessSettingsService;
+
     public List<AppointmentDTO> getAllAppointments() {
         return appointmentRepository.findAll().stream()
                 .map(this::convertToDTO)
@@ -51,6 +56,12 @@ public class AppointmentService {
                 .collect(Collectors.toList());
     }
 
+    public List<AppointmentDTO> getAppointmentsByUsername(String username) {
+        return appointmentRepository.findByClientUsername(username).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     public List<AppointmentDTO> getAppointmentsByStatus(AppointmentStatus status) {
         return appointmentRepository.findByStatus(status).stream()
                 .map(this::convertToDTO)
@@ -62,9 +73,33 @@ public class AppointmentService {
         User client = userRepository.findById(appointmentDTO.getClientId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", appointmentDTO.getClientId()));
 
-
         com.bookify.entity.Service service = serviceRepository.findById(appointmentDTO.getServiceId())
                 .orElseThrow(() -> new ResourceNotFoundException("Service", appointmentDTO.getServiceId()));
+
+        BusinessSettingsDTO settings = businessSettingsService.getSettings();
+
+        if (!settings.getAcceptOnlineBookings()) {
+            throw new IllegalArgumentException("Online bookings are currently disabled. Please contact us directly.");
+        }
+
+        LocalTime appointmentTime = appointmentDTO.getAppointmentDateTime().toLocalTime();
+        if (appointmentTime.isBefore(settings.getOpeningTime()) ||
+                appointmentTime.isAfter(settings.getClosingTime())) {
+            throw new IllegalArgumentException(
+                    String.format("Appointments must be between %s and %s",
+                            settings.getOpeningTime(),
+                            settings.getClosingTime())
+            );
+        }
+
+        LocalTime appointmentEndTime = appointmentTime.plusMinutes(service.getDurationMinutes());
+        if (appointmentEndTime.isAfter(settings.getClosingTime())) {
+            throw new IllegalArgumentException(
+                    String.format("This appointment would end at %s, which is after closing time (%s)",
+                            appointmentEndTime,
+                            settings.getClosingTime())
+            );
+        }
 
         // conflict check
         if (appointmentRepository.existsConflictingAppointment(
