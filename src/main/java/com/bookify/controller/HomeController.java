@@ -55,4 +55,9 @@ public class HomeController {
     public String adminSettings() {
         return "admin/settings";
     }
+
+    @GetMapping("/benchmark")
+    public String benchmark() {
+        return "benchmark";
+    }
 }

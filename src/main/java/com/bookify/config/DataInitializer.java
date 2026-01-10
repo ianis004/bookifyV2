@@ -27,7 +27,7 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (userRepository.count() == 0) {
 
-            System.out.println("🔄 Creating default users...");
+            System.out.println("🎎 Creating default users...");
 
             User admin = User.builder()
                     .username("admin")
@@ -73,9 +73,9 @@ public class DataInitializer implements CommandLineRunner {
                     .build();
             userRepository.save(client2);
 
-            System.out.println("✅ Default users created successfully!");
+            System.out.println("✅ Default users created successfully");
         } else {
-            System.out.println("ℹ️  Users already exist. Skipping initialization.");
+            System.out.println("✨ Users already exist, Skipping initialization.");
         }
     }
 }

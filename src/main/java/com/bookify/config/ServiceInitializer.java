@@ -23,7 +23,7 @@ public class ServiceInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (serviceRepository.count() == 0) {
 
-            System.out.println("🔄 Creating default services...");
+            System.out.println("📗 Creating default services...");
 
             com.bookify.entity.Service haircut = com.bookify.entity.Service.builder()
                     .name("Haircut & Styling")
@@ -79,9 +79,9 @@ public class ServiceInitializer implements CommandLineRunner {
                     .build();
             serviceRepository.save(facial);
 
-            System.out.println("✅ Default services created successfully!");
+            System.out.println("✅ Default services successful");
         } else {
-            System.out.println("ℹ️  Services already exist. Skipping initialization.");
+            System.out.println("📕  Services already exist. Skipping initialization.");
         }
     }
 }

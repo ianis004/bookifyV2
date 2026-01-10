@@ -23,7 +23,7 @@ public class BusinessSettingsInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (businessSettingsRepository.count() == 0) {
 
-            System.out.println("🔄 Creating business settings...");
+            System.out.println("📈 Creating business settings...");
 
             BusinessSettings settings = BusinessSettings.builder()
                     .businessName("Bookify Salon & Spa")
@@ -38,9 +38,9 @@ public class BusinessSettingsInitializer implements CommandLineRunner {
 
             businessSettingsRepository.save(settings);
 
-            System.out.println("✅ Business settings created successfully!");
+            System.out.println("✅ Business Succesfull ");
         } else {
-            System.out.println("ℹ️  Business settings already exist. Skipping initialization.");
+            System.out.println("📉 Business settings already exist, skipping initialization");
         }
     }
 }

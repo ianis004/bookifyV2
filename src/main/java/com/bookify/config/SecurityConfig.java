@@ -64,7 +64,10 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/h2-console/**"),
                                 new AntPathRequestMatcher("/css/**"),
                                 new AntPathRequestMatcher("/js/**"),
-                                new AntPathRequestMatcher("/images/**")
+                                new AntPathRequestMatcher("/images/**"),
+                                // ADD THESE HERE instead:
+                                new AntPathRequestMatcher("/benchmark"),
+                                new AntPathRequestMatcher("/api/data/**")
                         ).permitAll()
 
                         .requestMatchers(
@@ -114,7 +117,7 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/api/settings/**")
                         ).hasAuthority("ADMIN")
 
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated()  // this should be LAST
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
