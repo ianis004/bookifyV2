@@ -26,7 +26,7 @@ public class BusinessSettingsInitializer implements CommandLineRunner {
             System.out.println("📈 Creating business settings...");
 
             BusinessSettings settings = BusinessSettings.builder()
-                    .businessName("Bookify Salon & Spa")
+                    .businessName("General")
                     .openingTime(LocalTime.of(9, 0))      // 9:00 AM
                     .closingTime(LocalTime.of(18, 0))     // 6:00 PM
                     .slotDurationMinutes(30)

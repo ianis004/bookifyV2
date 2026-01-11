@@ -5,6 +5,7 @@ import com.bookify.enums.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -12,9 +13,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *Represents system users (Clients, Staff, Admins)
- */
 @Entity
 @Table(name = "users")
 @Data
@@ -34,6 +32,10 @@ public class User {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
+    @Pattern(
+            regexp = "^[A-Za-z0-9+_.-]+@(gmail\\.com|yahoo\\.com|outlook\\.com|hotmail\\.com)$",
+            message = "Email must end with @gmail.com, @yahoo.com, @outlook.com, or @hotmail.com"
+    )
     @Column(unique = true, nullable = false)
     private String email;
 
@@ -46,6 +48,8 @@ public class User {
     @Column(nullable = false)
     private String fullName;
 
+    @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "^\\d{10}$", message = "Phone number must be 10 digits")
     @Column(length = 20)
     private String phone;
 
