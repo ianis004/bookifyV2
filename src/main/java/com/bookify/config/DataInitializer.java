@@ -31,10 +31,10 @@ public class DataInitializer implements CommandLineRunner {
 
             User admin = User.builder()
                     .username("admin")
-                    .email("admin@bookify.com")
+                    .email("admin@gmail.com")
                     .password(passwordEncoder.encode("password"))
                     .fullName("Admin User")
-                    .phone("+40 0734558923")
+                    .phone("0734558923")
                     .role(Role.ADMIN)
                     .status(UserStatus.ACTIVE)
                     .build();
@@ -42,10 +42,10 @@ public class DataInitializer implements CommandLineRunner {
 
             User staff = User.builder()
                     .username("staff")
-                    .email("staff@bookify.com")
+                    .email("staff@gmail.com")
                     .password(passwordEncoder.encode("password"))
                     .fullName("Staff Member")
-                    .phone("+40 0723338457")
+                    .phone("0723338457")
                     .role(Role.STAFF)
                     .status(UserStatus.ACTIVE)
                     .build();
@@ -53,10 +53,10 @@ public class DataInitializer implements CommandLineRunner {
 
             User client1 = User.builder()
                     .username("client1")
-                    .email("client1@example.com")
+                    .email("client1@gmail.com")
                     .password(passwordEncoder.encode("password"))
                     .fullName("Dan Daniel")
-                    .phone("+40 0723468487")
+                    .phone("0723468487")
                     .role(Role.CLIENT)
                     .status(UserStatus.ACTIVE)
                     .build();
@@ -64,10 +64,10 @@ public class DataInitializer implements CommandLineRunner {
 
             User client2 = User.builder()
                     .username("client2")
-                    .email("client2@example.com")
+                    .email("client2@yahoo.com")
                     .password(passwordEncoder.encode("password"))
                     .fullName("Maria Elena")
-                    .phone("++40 0793854576")
+                    .phone("0793854576")
                     .role(Role.CLIENT)
                     .status(UserStatus.ACTIVE)
                     .build();

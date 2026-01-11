@@ -65,6 +65,9 @@
             outline: none;
             border-color: #667eea;
         }
+        input:invalid:not(:placeholder-shown) {
+            border-color: #dc3545;
+        }
         .btn {
             width: 100%;
             padding: 14px;
@@ -80,6 +83,11 @@
         .btn:hover {
             transform: translateY(-2px);
         }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
         .login-link {
             text-align: center;
             margin-top: 20px;
@@ -89,6 +97,11 @@
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
+        }
+        .hint {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -100,33 +113,64 @@
     </div>
     <h1>Create Account</h1>
 
-    <form th:action="@{/api/auth/register}" method="post" id="registerForm">
+    <form id="registerForm">
         <div class="form-group">
             <label for="username">Username *</label>
-            <input type="text" id="username" name="username" required minlength="3">
+            <input type="text"
+                   id="username"
+                   name="username"
+                   required
+                   minlength="3"
+                   maxlength="50"
+                   title="Username must be between 3 and 50 characters">
         </div>
 
         <div class="form-group">
             <label for="email">Email *</label>
-            <input type="email" id="email" name="email" required>
+            <input type="email"
+                   id="email"
+                   name="email"
+                   required
+                   pattern="^[A-Za-z0-9+_.\-]+@(gmail\.com|yahoo\.com|outlook\.com|hotmail\.com)$"
+                   title="Email must end with @gmail.com, @yahoo.com, @outlook.com, or @hotmail.com">
+            <div class="hint">Must end with @gmail.com, @yahoo.com, @outlook.com, or @hotmail.com</div>
         </div>
 
         <div class="form-group">
             <label for="fullName">Full Name *</label>
-            <input type="text" id="fullName" name="fullName" required>
+            <input type="text"
+                   id="fullName"
+                   name="fullName"
+                   required
+                   title="Full name is required">
         </div>
 
         <div class="form-group">
-            <label for="phone">Phone</label>
-            <input type="tel" id="phone" name="phone" placeholder="+1234567890">
+            <label for="phone">Phone *</label>
+            <input type="text"
+                   id="phone"
+                   name="phone"
+                   required
+                   pattern="\d{10}"
+                   maxlength="10"
+                   inputmode="numeric"
+                   title="Phone number must be exactly 10 digits"
+                   placeholder="0744929230">
+            <div class="hint">Must be exactly 10 digits (example: 0744929230)</div>
         </div>
 
         <div class="form-group">
             <label for="password">Password *</label>
-            <input type="password" id="password" name="password" required minlength="6">
+            <input type="password"
+                   id="password"
+                   name="password"
+                   required
+                   minlength="6"
+                   title="Password must be at least 6 characters">
+            <div class="hint">Must be at least 6 characters</div>
         </div>
 
-        <button type="submit" class="btn">Register</button>
+        <button type="submit" class="btn" id="submitBtn">Register</button>
     </form>
 
     <div class="login-link">
@@ -135,14 +179,54 @@
 </div>
 
 <script>
+    const phoneInput = document.getElementById('phone');
+    const passwordInput = document.getElementById('password');
+
+    phoneInput.addEventListener('input', function(e) {
+        const cursorPos = this.selectionStart;
+        const oldLength = this.value.length;
+
+        const cleaned = this.value.replace(/\D/g, '');
+        this.value = cleaned;
+
+        const newLength = this.value.length;
+        const diff = newLength - oldLength;
+        this.setSelectionRange(cursorPos + diff, cursorPos + diff);
+    });
+
+    passwordInput.addEventListener('input', function() {
+        const length = this.value.length;
+        if (length > 0 && length < 6) {
+            this.setCustomValidity(`Please lengthen this text to 6 characters or more (you are currently using ${length} characters)`);
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+
     document.getElementById('registerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
+        const phoneValue = phoneInput.value;
+        if (!/^\d{10}$/.test(phoneValue)) {
+            phoneInput.setCustomValidity('Phone number must be exactly 10 digits');
+        } else {
+            phoneInput.setCustomValidity('');
+        }
+
+        if (!this.checkValidity()) {
+            this.reportValidity();
+            return;
+        }
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Registering...';
+
         const formData = {
-            username: document.getElementById('username').value,
-            email: document.getElementById('email').value,
-            fullName: document.getElementById('fullName').value,
-            phone: document.getElementById('phone').value,
+            username: document.getElementById('username').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            fullName: document.getElementById('fullName').value.trim(),
+            phone: phoneValue,
             password: document.getElementById('password').value
         };
 
@@ -156,15 +240,50 @@
             });
 
             if (response.ok) {
-                alert('Registration successful! Please login.');
-                window.location.href = '/login';
+                alert('Registration successful! Redirecting to login...');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1000);
             } else {
-                const error = await response.json();
-                alert('Registration failed: ' + JSON.stringify(error));
+                const contentType = response.headers.get("content-type");
+
+                if (contentType && contentType.includes("application/json")) {
+                    const errors = await response.json();
+
+                    if (typeof errors === 'object' && !errors.message) {
+                        // Show first error as tooltip
+                        for (const [field, message] of Object.entries(errors)) {
+                            const input = document.getElementById(field);
+                            if (input) {
+                                input.setCustomValidity(message);
+                                input.reportValidity();
+                                break;
+                            }
+                        }
+                    } else {
+                        alert(errors.message || 'Registration failed. Please try again.');
+                    }
+                } else {
+                    const text = await response.text();
+                    alert(text || 'Registration failed. Please try again.');
+                }
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Register';
             }
         } catch (error) {
-            alert('Error: ' + error.message);
+            alert('Network error. Please check your connection and try again.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Register';
         }
+    });
+
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.id !== 'password' && this.id !== 'phone') {
+                this.setCustomValidity('');
+            }
+        });
     });
 </script>
 </body>
