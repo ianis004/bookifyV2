@@ -10,6 +10,7 @@ import com.bookify.exception.ResourceNotFoundException;
 import com.bookify.repository.AppointmentRepository;
 import com.bookify.repository.ServiceRepository;
 import com.bookify.repository.UserRepository;
+import com.bookify.socket.AppointmentNotificationServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * Business logic for Appointment management
+ * Now includes socket-based notifications for real-time updates
  */
 @Service
 @Transactional
@@ -37,6 +39,9 @@ public class AppointmentService {
 
     @Autowired
     private BusinessSettingsService businessSettingsService;
+
+    @Autowired
+    private AppointmentNotificationServer notificationServer;
 
     public List<AppointmentDTO> getAllAppointments() {
         return appointmentRepository.findAll().stream()
@@ -101,7 +106,7 @@ public class AppointmentService {
             );
         }
 
-        // conflict check
+        // Conflict check
         if (appointmentRepository.existsConflictingAppointment(
                 service.getId(), appointmentDTO.getAppointmentDateTime())) {
             throw new AppointmentConflictException();
@@ -116,6 +121,22 @@ public class AppointmentService {
                 .build();
 
         Appointment saved = appointmentRepository.save(appointment);
+
+        // NEW: Send notification via socket server
+        try {
+            String notification = String.format(
+                    "NEW_APPOINTMENT|ID:%d|CLIENT:%s|SERVICE:%s|TIME:%s",
+                    saved.getId(),
+                    saved.getClient().getFullName(),
+                    saved.getService().getName(),
+                    saved.getAppointmentDateTime().toString()
+            );
+            notificationServer.broadcastNotification(notification);
+            System.out.println("📢 Socket notification sent: New appointment created");
+        } catch (Exception e) {
+            System.err.println("⚠️ Failed to send socket notification: " + e.getMessage());
+// Don't fail the appointment creation if notification fails
+        }
         return convertToDTO(saved);
     }
 
@@ -123,11 +144,33 @@ public class AppointmentService {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Appointment", id));
 
+        AppointmentStatus oldStatus = appointment.getStatus();
+
         appointment.setAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
         appointment.setStatus(appointmentDTO.getStatus());
         appointment.setNotes(appointmentDTO.getNotes());
 
         Appointment updated = appointmentRepository.save(appointment);
+
+        // NEW: Send notification via socket server when status changes
+        try {
+            if (oldStatus != appointmentDTO.getStatus()) {
+                String notification = String.format(
+                        "APPOINTMENT_UPDATED|ID:%d|CLIENT:%s|OLD_STATUS:%s|NEW_STATUS:%s|SERVICE:%s",
+                        updated.getId(),
+                        updated.getClient().getFullName(),
+                        oldStatus,
+                        updated.getStatus(),
+                        updated.getService().getName()
+                );
+                notificationServer.broadcastNotification(notification);
+                System.out.println("📢 Socket notification sent: Appointment status changed");
+            }
+        } catch (Exception e) {
+            System.err.println("⚠️ Failed to send socket notification: " + e.getMessage());
+            // Don't fail the update if notification fails
+        }
+
         return convertToDTO(updated);
     }
 
@@ -135,7 +178,27 @@ public class AppointmentService {
         if (!appointmentRepository.existsById(id)) {
             throw new ResourceNotFoundException("Appointment", id);
         }
+
+        // Get appointment details before deletion for notification
+        Appointment appointment = appointmentRepository.findById(id).orElse(null);
+
         appointmentRepository.deleteById(id);
+
+        // NEW: Send notification via socket server
+        try {
+            if (appointment != null) {
+                String notification = String.format(
+                        "APPOINTMENT_DELETED|ID:%d|CLIENT:%s|SERVICE:%s",
+                        appointment.getId(),
+                        appointment.getClient().getFullName(),
+                        appointment.getService().getName()
+                );
+                notificationServer.broadcastNotification(notification);
+                System.out.println("📢 Socket notification sent: Appointment deleted");
+            }
+        } catch (Exception e) {
+            System.err.println("⚠️ Failed to send socket notification: " + e.getMessage());
+        }
     }
 
     private AppointmentDTO convertToDTO(Appointment appointment) {

@@ -49,6 +49,7 @@ public class Appointment {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

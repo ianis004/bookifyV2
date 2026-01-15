@@ -13,6 +13,9 @@ public class BookifyApplication {
         // for in-memory H2: jdbc:h2:mem:bookifydb
         // for file based H2: jdbc:h2:file:./data/bookifydb
         // for H2 file based with password : jdbc:h2:file:./data/bookify-dev;CIPHER=AES (dev password)
+        // to create a new jar file run these : Remove-Item .\data\bookify-dev.mv.db -Force -ErrorAction SilentlyContinue
+        //                                      Remove-Item .\data\bookify-dev.trace.db -Force -ErrorAction SilentlyContinue
+        //                                      mvn clean package
         SpringApplication.run(BookifyApplication.class, args);
     }
 }
